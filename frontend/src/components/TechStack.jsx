@@ -5,48 +5,48 @@ import { Cloud, GitBranch, Server, Code, Brain, Database, Container, Workflow } 
 const techStacks = [
   {
     id: 1,
-    category: 'Cloud Infra',
+    category: 'Cloud Infrastructure',
     icon: Cloud,
-    technologies: ['AWS', 'Google Cloud', 'Azure'],
-    description: '엔터프라이즈 인프라 구축의 필수 요소',
+    technologies: ['Multi-Cloud', 'Auto Scaling', 'HA/DR'],
+    description: 'AWS, Azure, GCP 플랫폼 전반에 걸친 멀티 클라우드 아키텍처 설계 및 구현',
     color: 'from-blue-500/10 to-cyan-500/10',
     borderColor: 'border-blue-500/20',
   },
   {
     id: 2,
-    category: 'DevOps',
+    category: 'RAG Systems',
+    icon: Brain,
+    technologies: ['Vector DB', 'Embeddings', 'LLM Ops'],
+    description: '벡터 데이터베이스와 LLM 통합을 활용한 엔터프라이즈 AI 지식 베이스 구축',
+    color: 'from-violet-500/10 to-fuchsia-500/10',
+    borderColor: 'border-violet-500/20',
+  },
+  {
+    id: 3,
+    category: 'DevOps Pipeline',
     icon: GitBranch,
-    technologies: ['Jenkins', 'Docker', 'Kubernetes', 'Terraform'],
-    description: '자동화 및 컨테이너 오케스트레이션 전문성 강조',
+    technologies: ['CI/CD', 'IaC', 'GitOps'],
+    description: '인프라스트럭처 코드(IaC)를 활용한 자동화된 CI/CD 워크플로우 구축',
     color: 'from-purple-500/10 to-pink-500/10',
     borderColor: 'border-purple-500/20',
   },
   {
-    id: 3,
-    category: 'Backend',
-    icon: Database,
-    technologies: ['Spring Boot', 'PostgreSQL', 'FastAPI'],
-    description: '안정적인 웹 서비스와 고성능 AI API 통신에 최적화',
+    id: 4,
+    category: 'ML Operations',
+    icon: Server,
+    technologies: ['Model Ops', 'Monitoring', 'A/B Testing'],
+    description: '대규모 모델 배포 및 라이프사이클 관리 시스템 구현',
     color: 'from-green-500/10 to-emerald-500/10',
     borderColor: 'border-green-500/20',
   },
   {
-    id: 4,
-    category: 'Frontend',
+    id: 5,
+    category: 'Custom Solutions',
     icon: Code,
-    technologies: ['React', 'TypeScript', 'Vite'],
-    description: '빠르고 견고한 동적 UI 구현',
+    technologies: ['Architecture', 'Consulting', 'Integration'],
+    description: '비즈니스 요구사항에 맞춤화된 아키텍처 설계 및 구현',
     color: 'from-orange-500/10 to-yellow-500/10',
     borderColor: 'border-orange-500/20',
-  },
-  {
-    id: 5,
-    category: 'AI / RAG',
-    icon: Brain,
-    technologies: ['Claude 3.5', 'LangChain', 'Pinecone'],
-    description: '차세대 AI 시스템 구축 및 벡터 데이터베이스 통합',
-    color: 'from-violet-500/10 to-fuchsia-500/10',
-    borderColor: 'border-violet-500/20',
   },
 ]
 
@@ -70,7 +70,7 @@ export default function TechStack() {
       </motion.div>
 
       {/* Tech Stack Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 max-w-7xl mx-auto">
         {techStacks.map((stack, index) => {
           const Icon = stack.icon
 
@@ -134,39 +134,6 @@ export default function TechStack() {
             </motion.div>
           )
         })}
-
-        {/* Additional Expertise Card */}
-        <motion.div
-          initial={{ opacity: 0, y: 30 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.5, duration: 0.5 }}
-          viewport={{ once: true }}
-        >
-          <Tilt
-            tiltMaxAngleX={10}
-            tiltMaxAngleY={10}
-            scale={1.03}
-            transitionSpeed={2000}
-            glareEnable={true}
-            glareMaxOpacity={0.2}
-            glareColor="#ffffff"
-            glareBorderRadius="24px"
-          >
-            <div className="group h-full bg-gradient-to-br from-[#161616] to-[#1F1F1F] border border-gray-600/30 rounded-bento p-6 flex flex-col justify-center items-center text-center">
-            <Workflow className="w-12 h-12 text-white/40 mb-4 group-hover:text-white/60 transition-colors" strokeWidth={1.5} />
-            <h3 className="text-lg font-bold mb-2">And More</h3>
-            <p className="text-gray-500 text-sm mb-4">
-              지속적으로 최신 기술을 학습하고<br />프로젝트에 적용합니다
-            </p>
-            <div className="flex flex-wrap gap-2 justify-center">
-              <span className="px-2.5 py-1 bg-[#2A2A2A] rounded text-xs text-gray-400">Redis</span>
-              <span className="px-2.5 py-1 bg-[#2A2A2A] rounded text-xs text-gray-400">MongoDB</span>
-              <span className="px-2.5 py-1 bg-[#2A2A2A] rounded text-xs text-gray-400">Nginx</span>
-              <span className="px-2.5 py-1 bg-[#2A2A2A] rounded text-xs text-gray-400">GraphQL</span>
-            </div>
-          </div>
-          </Tilt>
-        </motion.div>
       </div>
 
       {/* Stats Section */}

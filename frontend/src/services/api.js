@@ -1,143 +1,200 @@
-import axios from 'axios'
-
-// API Base URL - Vite proxy를 통해 /api 요청은 localhost:8080으로 전달됨
-const API_BASE_URL = '/api'
-
-// Axios 인스턴스 생성
-const apiClient = axios.create({
-  baseURL: API_BASE_URL,
-  headers: {
-    'Content-Type': 'application/json',
-  },
-  timeout: 10000, // 10초 타임아웃
-})
-
-// 요청 인터셉터 (토큰 추가 등)
-apiClient.interceptors.request.use(
-  (config) => {
-    // 필요시 토큰을 헤더에 추가
-    // const token = localStorage.getItem('token')
-    // if (token) {
-    //   config.headers.Authorization = `Bearer ${token}`
-    // }
-    return config
-  },
-  (error) => {
-    return Promise.reject(error)
-  }
-)
-
-// 응답 인터셉터 (에러 처리)
-apiClient.interceptors.response.use(
-  (response) => response,
-  (error) => {
-    if (error.response) {
-      // 서버에서 응답이 왔지만 에러 상태 코드인 경우
-      console.error('API Error:', error.response.data)
-      throw new Error(error.response.data.message || '서버 요청에 실패했습니다.')
-    } else if (error.request) {
-      // 요청은 보냈지만 응답을 받지 못한 경우
-      console.error('Network Error:', error.request)
-      throw new Error('서버와 연결할 수 없습니다. 네트워크를 확인해주세요.')
-    } else {
-      // 요청 설정 중 에러가 발생한 경우
-      console.error('Request Error:', error.message)
-      throw new Error('요청 처리 중 오류가 발생했습니다.')
-    }
-  }
-)
+import { supabase } from '../lib/supabase'
 
 /**
  * 문의 제출 API
  * @param {Object} inquiryData - 문의 데이터
- * @param {string} inquiryData.serviceType - 서비스 유형 (CLOUD_RAG, DEVOPS, AIOPS, MLOPS, CLOUD_INFRA, OTHER)
- * @param {string} inquiryData.companyName - 회사명 (선택)
  * @param {string} inquiryData.name - 이름
  * @param {string} inquiryData.email - 이메일
- * @param {string} inquiryData.phone - 전화번호
+ * @param {string} inquiryData.company - 회사명 (선택)
  * @param {string} inquiryData.message - 문의 내용
  * @returns {Promise<Object>} 생성된 문의 정보
  */
 export const submitInquiry = async (inquiryData) => {
   try {
-    const response = await apiClient.post('/inquiries', inquiryData)
-    return response.data
+    const { data, error } = await supabase
+      .from('inquiries')
+      .insert([
+        {
+          name: inquiryData.name,
+          email: inquiryData.email,
+          company: inquiryData.company || null,
+          message: inquiryData.message,
+          status: 'pending'
+        }
+      ])
+      .select()
+      .single()
+
+    if (error) throw error
+    return data
   } catch (error) {
-    throw error
+    console.error('문의 제출 오류:', error)
+    throw new Error(error.message || '문의 제출에 실패했습니다.')
   }
 }
 
 /**
  * 게시물 목록 조회 API
  * @param {Object} params - 조회 파라미터
- * @param {string} params.category - 카테고리 필터 (NOTICE, RECRUIT)
  * @param {number} params.page - 페이지 번호 (0부터 시작)
  * @param {number} params.size - 페이지 크기
  * @returns {Promise<Array>} 게시물 목록
  */
 export const fetchPosts = async (params = { page: 0, size: 10 }) => {
   try {
-    const response = await apiClient.get('/posts', { params })
-    return response.data
+    const { page = 0, size = 10 } = params
+    const from = page * size
+    const to = from + size - 1
+
+    const { data, error, count } = await supabase
+      .from('posts')
+      .select('*', { count: 'exact' })
+      .order('created_at', { ascending: false })
+      .range(from, to)
+
+    if (error) throw error
+
+    return {
+      content: data,
+      totalElements: count,
+      totalPages: Math.ceil(count / size),
+      size: size,
+      number: page
+    }
   } catch (error) {
-    throw error
+    console.error('게시물 목록 조회 오류:', error)
+    throw new Error(error.message || '게시물을 불러오는데 실패했습니다.')
   }
 }
 
 /**
  * 특정 게시물 조회 API
- * @param {number} postId - 게시물 ID
+ * @param {string} postId - 게시물 ID (UUID)
  * @returns {Promise<Object>} 게시물 상세 정보
  */
 export const fetchPostById = async (postId) => {
   try {
-    const response = await apiClient.get(`/posts/${postId}`)
-    return response.data
+    // 조회수 증가
+    const { error: updateError } = await supabase.rpc('increment_views', {
+      post_id: postId
+    })
+
+    // 게시물 조회
+    const { data, error } = await supabase
+      .from('posts')
+      .select('*')
+      .eq('id', postId)
+      .single()
+
+    if (error) throw error
+    return data
   } catch (error) {
-    throw error
+    console.error('게시물 조회 오류:', error)
+    throw new Error(error.message || '게시물을 불러오는데 실패했습니다.')
   }
 }
 
 /**
  * 관리자 로그인 API
  * @param {Object} credentials - 로그인 정보
- * @param {string} credentials.username - 사용자명
+ * @param {string} credentials.email - 이메일
  * @param {string} credentials.password - 비밀번호
- * @returns {Promise<Object>} 인증 토큰 및 사용자 정보
+ * @returns {Promise<Object>} 인증 정보
  */
 export const adminLogin = async (credentials) => {
   try {
-    const response = await apiClient.post('/admin/login', credentials)
+    const { data, error } = await supabase.auth.signInWithPassword({
+      email: credentials.email,
+      password: credentials.password
+    })
 
-    // 토큰을 로컬 스토리지에 저장
-    if (response.data.token) {
-      localStorage.setItem('token', response.data.token)
-    }
-
-    return response.data
+    if (error) throw error
+    return data
   } catch (error) {
-    throw error
+    console.error('로그인 오류:', error)
+    throw new Error(error.message || '로그인에 실패했습니다.')
   }
 }
 
 /**
  * 관리자 로그아웃
  */
-export const adminLogout = () => {
-  localStorage.removeItem('token')
+export const adminLogout = async () => {
+  try {
+    const { error } = await supabase.auth.signOut()
+    if (error) throw error
+  } catch (error) {
+    console.error('로그아웃 오류:', error)
+    throw new Error(error.message || '로그아웃에 실패했습니다.')
+  }
+}
+
+/**
+ * 현재 로그인한 사용자 정보 가져오기
+ */
+export const getCurrentUser = async () => {
+  try {
+    const { data: { user }, error } = await supabase.auth.getUser()
+    if (error) throw error
+    return user
+  } catch (error) {
+    console.error('사용자 정보 조회 오류:', error)
+    return null
+  }
 }
 
 /**
  * 문의 목록 조회 (관리자용)
  * @param {Object} params - 조회 파라미터
- * @returns {Promise<Array>} 문의 목록
+ * @returns {Promise<Object>} 문의 목록
  */
 export const fetchInquiries = async (params = { page: 0, size: 20 }) => {
   try {
-    const response = await apiClient.get('/admin/inquiries', { params })
-    return response.data
+    const { page = 0, size = 20 } = params
+    const from = page * size
+    const to = from + size - 1
+
+    const { data, error, count } = await supabase
+      .from('inquiries')
+      .select('*', { count: 'exact' })
+      .order('created_at', { ascending: false })
+      .range(from, to)
+
+    if (error) throw error
+
+    return {
+      content: data,
+      totalElements: count,
+      totalPages: Math.ceil(count / size),
+      size: size,
+      number: page
+    }
   } catch (error) {
-    throw error
+    console.error('문의 목록 조회 오류:', error)
+    throw new Error(error.message || '문의 목록을 불러오는데 실패했습니다.')
+  }
+}
+
+/**
+ * 문의 상태 업데이트 (관리자용)
+ * @param {string} inquiryId - 문의 ID
+ * @param {string} status - 상태 (pending, in_progress, completed)
+ * @returns {Promise<Object>} 업데이트된 문의 정보
+ */
+export const updateInquiryStatus = async (inquiryId, status) => {
+  try {
+    const { data, error } = await supabase
+      .from('inquiries')
+      .update({ status })
+      .eq('id', inquiryId)
+      .select()
+      .single()
+
+    if (error) throw error
+    return data
+  } catch (error) {
+    console.error('문의 상태 업데이트 오류:', error)
+    throw new Error(error.message || '문의 상태 업데이트에 실패했습니다.')
   }
 }
 
@@ -148,38 +205,69 @@ export const fetchInquiries = async (params = { page: 0, size: 20 }) => {
  */
 export const createPost = async (postData) => {
   try {
-    const response = await apiClient.post('/admin/posts', postData)
-    return response.data
+    const { data, error } = await supabase
+      .from('posts')
+      .insert([
+        {
+          title: postData.title,
+          content: postData.content,
+          author: postData.author || '관리자'
+        }
+      ])
+      .select()
+      .single()
+
+    if (error) throw error
+    return data
   } catch (error) {
-    throw error
+    console.error('게시물 생성 오류:', error)
+    throw new Error(error.message || '게시물 생성에 실패했습니다.')
   }
 }
 
 /**
  * 게시물 수정 (관리자용)
- * @param {number} postId - 게시물 ID
+ * @param {string} postId - 게시물 ID
  * @param {Object} postData - 수정할 게시물 데이터
  * @returns {Promise<Object>} 수정된 게시물 정보
  */
 export const updatePost = async (postId, postData) => {
   try {
-    const response = await apiClient.put(`/admin/posts/${postId}`, postData)
-    return response.data
+    const { data, error } = await supabase
+      .from('posts')
+      .update({
+        title: postData.title,
+        content: postData.content,
+        author: postData.author
+      })
+      .eq('id', postId)
+      .select()
+      .single()
+
+    if (error) throw error
+    return data
   } catch (error) {
-    throw error
+    console.error('게시물 수정 오류:', error)
+    throw new Error(error.message || '게시물 수정에 실패했습니다.')
   }
 }
 
 /**
  * 게시물 삭제 (관리자용)
- * @param {number} postId - 게시물 ID
+ * @param {string} postId - 게시물 ID
  * @returns {Promise<void>}
  */
 export const deletePost = async (postId) => {
   try {
-    await apiClient.delete(`/admin/posts/${postId}`)
+    const { error } = await supabase
+      .from('posts')
+      .delete()
+      .eq('id', postId)
+
+    if (error) throw error
   } catch (error) {
-    throw error
+    console.error('게시물 삭제 오류:', error)
+    throw new Error(error.message || '게시물 삭제에 실패했습니다.')
   }
 }
 
@@ -190,19 +278,29 @@ export const deletePost = async (postId) => {
  */
 export const uploadImage = async (file) => {
   try {
-    const formData = new FormData()
-    formData.append('file', file)
+    const fileExt = file.name.split('.').pop()
+    const fileName = `${Date.now()}.${fileExt}`
+    const filePath = `uploads/${fileName}`
 
-    const response = await apiClient.post('/admin/upload', formData, {
-      headers: {
-        'Content-Type': 'multipart/form-data',
-      },
-    })
+    const { data, error } = await supabase.storage
+      .from('images')
+      .upload(filePath, file)
 
-    return response.data
+    if (error) throw error
+
+    // 공개 URL 생성
+    const { data: { publicUrl } } = supabase.storage
+      .from('images')
+      .getPublicUrl(filePath)
+
+    return {
+      url: publicUrl,
+      path: filePath
+    }
   } catch (error) {
-    throw error
+    console.error('이미지 업로드 오류:', error)
+    throw new Error(error.message || '이미지 업로드에 실패했습니다.')
   }
 }
 
-export default apiClient
+export default supabase

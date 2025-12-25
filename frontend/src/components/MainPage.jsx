@@ -20,28 +20,21 @@ export default function MainPage({ onOpenInquiry }) {
       <HeroSection onOpenInquiry={onOpenInquiry} />
 
       {/* Core Capabilities Section */}
-      <AnimatedSection
+      <section
         id="services"
         className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20"
-        direction="up"
       >
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6 }}
-          viewport={{ once: true }}
-          className="mb-12"
-        >
+        <div className="mb-12 text-center">
           <h2 className="text-4xl md:text-5xl font-bold mb-4">
             Core <span className="text-gray-500">Capabilities</span>
           </h2>
           <p className="text-gray-500 text-lg">
             Enterprise infrastructure and AI solutions
           </p>
-        </motion.div>
+        </div>
 
         <BentoGrid onOpenInquiry={onOpenInquiry} />
-      </AnimatedSection>
+      </section>
 
       {/* Tech Stack Section with Parallax */}
       <AnimatedSection
