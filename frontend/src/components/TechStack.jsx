@@ -77,10 +77,15 @@ export default function TechStack() {
           return (
             <motion.div
               key={stack.id}
-              initial={{ opacity: 0, y: 30 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              transition={{ delay: index * 0.1, duration: 0.5 }}
-              viewport={{ once: true }}
+              initial={{ opacity: 0, scale: 0.9, y: 40 }}
+              whileInView={{ opacity: 1, scale: 1, y: 0 }}
+              viewport={{ once: true, margin: "-50px" }}
+              transition={{
+                delay: index * 0.1,
+                type: "spring",
+                stiffness: 100,
+                damping: 20
+              }}
               className="relative"
             >
               <Tilt
@@ -96,69 +101,47 @@ export default function TechStack() {
               >
                 {/* Card */}
                 <div className={`group relative h-full bg-dark-gray border ${stack.borderColor} rounded-bento p-6 overflow-hidden transition-all duration-300`}>
-                {/* Background Gradient */}
-                <div className={`absolute inset-0 bg-gradient-to-br ${stack.color} opacity-0 group-hover:opacity-100 transition-opacity duration-500`} />
+                  {/* Background Gradient */}
+                  <div className={`absolute inset-0 bg-gradient-to-br ${stack.color} opacity-0 group-hover:opacity-100 transition-opacity duration-500`} />
 
-                {/* Content */}
-                <div className="relative z-10">
-                  {/* Icon & Category */}
-                  <div className="flex items-center gap-3 mb-4">
-                    <div className="p-2.5 bg-[#1F1F1F] rounded-xl group-hover:bg-[#404040] transition-colors">
-                      <Icon className="w-6 h-6 text-white" strokeWidth={1.5} />
+                  {/* Content */}
+                  <div className="relative z-10">
+                    {/* Icon & Category */}
+                    <div className="flex items-center gap-3 mb-4">
+                      <div className="p-2.5 bg-[#1F1F1F] rounded-xl group-hover:bg-[#404040] transition-colors">
+                        <Icon className="w-6 h-6 text-white" strokeWidth={1.5} />
+                      </div>
+                      <h3 className="text-xl font-bold text-white">{stack.category}</h3>
                     </div>
-                    <h3 className="text-xl font-bold text-white">{stack.category}</h3>
+
+                    {/* Technologies */}
+                    <div className="flex flex-wrap gap-2 mb-4">
+                      {stack.technologies.map((tech, idx) => (
+                        <span
+                          key={idx}
+                          className="px-3 py-1.5 bg-[#2A2A2A] rounded-lg text-sm text-gray-300 border border-border-gray group-hover:border-gray-600/50 transition-colors"
+                        >
+                          {tech}
+                        </span>
+                      ))}
+                    </div>
+
+                    {/* Description */}
+                    <p className="text-gray-500 text-sm leading-relaxed group-hover:text-gray-400 transition-colors">
+                      {stack.description}
+                    </p>
                   </div>
 
-                  {/* Technologies */}
-                  <div className="flex flex-wrap gap-2 mb-4">
-                    {stack.technologies.map((tech, idx) => (
-                      <span
-                        key={idx}
-                        className="px-3 py-1.5 bg-[#2A2A2A] rounded-lg text-sm text-gray-300 border border-border-gray group-hover:border-gray-600/50 transition-colors"
-                      >
-                        {tech}
-                      </span>
-                    ))}
-                  </div>
-
-                  {/* Description */}
-                  <p className="text-gray-500 text-sm leading-relaxed group-hover:text-gray-400 transition-colors">
-                    {stack.description}
-                  </p>
+                  {/* Decorative Element */}
+                  <div className="absolute -bottom-10 -right-10 w-32 h-32 bg-white/[0.02] rounded-full group-hover:scale-150 transition-transform duration-500" />
                 </div>
-
-                {/* Decorative Element */}
-                <div className="absolute -bottom-10 -right-10 w-32 h-32 bg-white/[0.02] rounded-full group-hover:scale-150 transition-transform duration-500" />
-              </div>
               </Tilt>
             </motion.div>
           )
         })}
       </div>
 
-      {/* Stats Section */}
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        whileInView={{ opacity: 1, y: 0 }}
-        transition={{ delay: 0.6, duration: 0.6 }}
-        viewport={{ once: true }}
-        className="mt-16 grid grid-cols-2 md:grid-cols-4 gap-4"
-      >
-        {[
-          { label: 'Technologies', value: '20+' },
-          { label: 'Cloud Platforms', value: '3' },
-          { label: 'Years Experience', value: '5+' },
-          { label: 'Projects', value: '150+' },
-        ].map((stat, index) => (
-          <div
-            key={index}
-            className="bg-dark-gray border border-border-gray rounded-bento p-4 text-center"
-          >
-            <div className="text-2xl font-bold text-white mb-1">{stat.value}</div>
-            <div className="text-xs text-gray-500 uppercase tracking-wider">{stat.label}</div>
-          </div>
-        ))}
-      </motion.div>
+
     </div>
   )
 }

@@ -13,6 +13,8 @@ export default {
         'border-gray': '#262626',
         'light-gray': '#404040',
         'accent-gray': '#2A2A2A',
+        'neon-blue': '#00F0FF',
+        'neon-purple': '#9D00FF',
       },
       borderRadius: {
         'bento': '24px',
@@ -31,7 +33,7 @@ export default {
     },
   },
   plugins: [
-    function({ addUtilities }) {
+    function ({ addUtilities }) {
       addUtilities({
         '.scrollbar-hide': {
           '-ms-overflow-style': 'none',

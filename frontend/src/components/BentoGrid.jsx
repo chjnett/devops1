@@ -6,15 +6,16 @@ const capabilities = [
   {
     id: 1,
     title: 'Cloud Infrastructure',
-    description: 'Multi-cloud architecture design and implementation across AWS, Azure, and GCP platforms.',
+    description: 'AWS, Azure, GCP 플랫폼 전반에 걸친 멀티 클라우드 아키텍처 설계 및 구현.',
     icon: Server,
     size: 'large',
-    features: ['Multi-Cloud', 'Auto Scaling', 'HA/DR']
+    features: ['Multi-Cloud', 'Auto Scaling', 'HA/DR'],
+    action: 'learn_more'
   },
   {
     id: 2,
     title: 'RAG Systems',
-    description: 'Enterprise AI knowledge bases with vector databases and LLM integration.',
+    description: '벡터 데이터베이스와 LLM 통합을 통한 엔터프라이즈 AI 지식 베이스 구축.',
     icon: Brain,
     size: 'medium',
     features: ['Vector DB', 'Embeddings', 'LLM Ops']
@@ -22,7 +23,7 @@ const capabilities = [
   {
     id: 3,
     title: 'DevOps Pipeline',
-    description: 'Automated CI/CD workflows with infrastructure as code.',
+    description: 'IaC(Infrastructure as Code) 기반의 자동화된 CI/CD 워크플로우.',
     icon: GitBranch,
     size: 'medium',
     features: ['CI/CD', 'IaC', 'GitOps']
@@ -30,118 +31,120 @@ const capabilities = [
   {
     id: 4,
     title: 'ML Operations',
-    description: 'Model deployment and lifecycle management at scale.',
+    description: '대규모 모델 배포 및 라이프사이클 관리 시스템.',
     icon: Cpu,
     size: 'medium',
     features: ['Model Ops', 'Monitoring', 'A/B Testing']
   },
+  {
+    id: 5,
+    title: 'Custom Solutions',
+    description: '비즈니스 요구사항에 최적화된 맞춤형 아키텍처를 설계합니다.',
+    icon: Network,
+    size: 'medium',
+    features: [],
+    action: 'contact'
+  }
 ]
 
 export default function BentoGrid({ onOpenInquiry }) {
   return (
-    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 max-w-7xl mx-auto">
       {capabilities.map((capability, index) => {
         const Icon = capability.icon
+        // Grid span logic: Large items take 2x2, others 1x1
         const gridClass = capability.size === 'large'
           ? 'md:col-span-2 md:row-span-2'
-          : 'md:col-span-1'
+          : 'md:col-span-1 md:row-span-1'
 
         return (
           <motion.div
             key={capability.id}
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            transition={{ delay: index * 0.1, duration: 0.5 }}
-            viewport={{ once: true }}
+            initial={{ opacity: 0, scale: 0.8, y: 50 }}
+            whileInView={{ opacity: 1, scale: 1, y: 0 }}
+            viewport={{ once: true, margin: "-50px" }}
+            transition={{
+              duration: 0.5,
+              delay: index * 0.1,
+              type: "spring",
+              stiffness: 100,
+              damping: 15
+            }}
             className={gridClass}
           >
             <Tilt
-              tiltMaxAngleX={8}
-              tiltMaxAngleY={8}
-              scale={1.02}
-              transitionSpeed={2500}
-              glareEnable={true}
-              glareMaxOpacity={0.15}
-              glareColor="#ffffff"
-              glarePosition="all"
-              glareBorderRadius="24px"
+              tiltMaxAngleX={5}
+              tiltMaxAngleY={5}
+              scale={1.01}
+              transitionSpeed={2000}
+              className="h-full"
             >
               <div
-                className="bento-card group cursor-pointer h-full relative overflow-hidden"
+                className="bento-card group cursor-pointer h-full relative overflow-hidden flex flex-col justify-between"
                 onClick={onOpenInquiry}
               >
-                <div className="relative z-10">
+                <div className="relative z-10 flex-1">
+                  {/* Header & Icon */}
                   <div className="flex items-start justify-between mb-4">
-                    <div className="p-3 rounded-xl bg-[#1F1F1F] group-hover:bg-[#404040] transition-colors">
+                    <div className="p-3 rounded-xl bg-[#1F1F1F] group-hover:bg-[#404040] transition-colors border border-white/5">
                       <Icon className="w-6 h-6 text-white" strokeWidth={1.5} />
                     </div>
+                    {capability.action === 'contact' && (
+                      <div className="px-2 py-1 rounded-full bg-neon-purple/10 border border-neon-purple/20">
+                        <span className="text-[10px] text-neon-purple font-bold tracking-wider">CONTACT</span>
+                      </div>
+                    )}
                   </div>
 
                   <h3 className="text-xl font-bold mb-3 group-hover:text-gray-300 transition-colors">
                     {capability.title}
                   </h3>
 
-                  <p className="text-gray-500 mb-4 text-sm leading-relaxed">
+                  <p className="text-gray-500 mb-6 text-sm leading-relaxed break-keep">
                     {capability.description}
                   </p>
 
-                  <div className="flex flex-wrap gap-2">
-                    {capability.features.map((feature, idx) => (
-                      <span
-                        key={idx}
-                        className="px-3 py-1 bg-[#2A2A2A] rounded-full text-xs text-gray-400 border border-border-gray"
-                      >
-                        {feature}
-                      </span>
-                    ))}
-                  </div>
-
-                  {capability.size === 'large' && (
-                    <div className="mt-6 pt-6 border-t border-border-gray">
-                      <div className="flex items-center gap-2 text-white group-hover:gap-4 transition-all">
-                        <span className="text-sm font-medium">Learn more</span>
-                        <Zap className="w-4 h-4" strokeWidth={1.5} />
-                      </div>
+                  {/* Features Tags */}
+                  {capability.features.length > 0 && (
+                    <div className="flex flex-wrap gap-2">
+                      {capability.features.map((feature, idx) => (
+                        <span
+                          key={idx}
+                          className="px-3 py-1 bg-[#2A2A2A] rounded-full text-xs text-gray-400 border border-border-gray/50 whitespace-nowrap"
+                        >
+                          {feature}
+                        </span>
+                      ))}
                     </div>
                   )}
                 </div>
 
-                <div className="absolute top-0 right-0 w-32 h-32 bg-white/[0.02] rounded-bl-full transform translate-x-16 -translate-y-16 group-hover:scale-150 transition-transform duration-500" />
+                {/* Footer Actions */}
+                <div className="relative z-10 mt-6 pt-4 border-t border-border-gray/50">
+                  {capability.action === 'learn_more' ? (
+                    <div className="flex items-center gap-2 text-white group-hover:gap-3 transition-all">
+                      <span className="text-sm font-medium">Learn more</span>
+                      <Zap className="w-4 h-4 text-neon-blue" strokeWidth={1.5} />
+                    </div>
+                  ) : capability.action === 'contact' ? (
+                    <div className="flex items-center gap-2 text-white group-hover:gap-3 transition-all">
+                      <span className="text-sm font-medium">Get Started</span>
+                      <span className="text-lg leading-none">→</span>
+                    </div>
+                  ) : (
+                    /* Default spacer or generic action if needed */
+                    <div className="h-4" />
+                  )}
+                </div>
+
+                {/* Animated Background Decoration */}
+                <div className="absolute top-0 right-0 w-64 h-64 bg-white/[0.02] rounded-full blur-3xl transform translate-x-1/2 -translate-y-1/2 group-hover:bg-neon-blue/[0.05] transition-colors duration-500" />
+
               </div>
             </Tilt>
           </motion.div>
         )
       })}
-
-      {/* Additional Info Card */}
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        whileInView={{ opacity: 1, y: 0 }}
-        transition={{ delay: 0.4, duration: 0.5 }}
-        viewport={{ once: true }}
-      >
-        <Tilt
-          tiltMaxAngleX={8}
-          tiltMaxAngleY={8}
-          scale={1.02}
-          transitionSpeed={2500}
-          glareEnable={true}
-          glareMaxOpacity={0.15}
-          glareColor="#ffffff"
-          glareBorderRadius="24px"
-        >
-          <div className="bento-card border-gray-600/30 h-full">
-            <Network className="w-10 h-10 text-white/40 mb-4" strokeWidth={1.5} />
-            <h3 className="text-lg font-bold mb-2">Custom Solutions</h3>
-            <p className="text-gray-500 text-sm mb-4">
-              Tailored architecture for your business needs
-            </p>
-            <button onClick={onOpenInquiry} className="text-white text-sm font-medium hover:text-gray-300 transition-colors">
-              Contact us →
-            </button>
-          </div>
-        </Tilt>
-      </motion.div>
     </div>
   )
 }

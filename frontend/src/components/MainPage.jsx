@@ -1,5 +1,6 @@
 import { motion } from 'framer-motion'
 import HeroSection from './HeroSection'
+import SpatialDepthSection from './SpatialDepthSection'
 import BentoGrid from './BentoGrid'
 import TechStack from './TechStack'
 import EfficiencyChart from './EfficiencyChart'
@@ -19,10 +20,12 @@ export default function MainPage({ onOpenInquiry }) {
 
       <HeroSection onOpenInquiry={onOpenInquiry} />
 
+      <SpatialDepthSection />
+
       {/* Core Capabilities Section */}
       <section
         id="services"
-        className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20"
+        className="relative z-20 bg-deep-black max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20"
       >
         <div className="mb-12 text-center">
           <h2 className="text-4xl md:text-5xl font-bold mb-4">
@@ -39,7 +42,7 @@ export default function MainPage({ onOpenInquiry }) {
       {/* Tech Stack Section with Parallax */}
       <AnimatedSection
         id="tech-stack"
-        className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20 relative"
+        className="relative z-20 bg-deep-black max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20"
         direction="fade"
         parallax={false}
       >
@@ -60,24 +63,20 @@ export default function MainPage({ onOpenInquiry }) {
       {/* Efficiency Chart Section */}
       <AnimatedSection
         id="results"
-        className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20"
+        className="relative z-20 bg-deep-black max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20"
         direction="up"
       >
         <EfficiencyChart />
       </AnimatedSection>
 
       {/* Board List Section */}
-      <AnimatedSection
-        className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20"
-        direction="up"
-        delay={0.2}
-      >
+      <section className="relative z-20 bg-deep-black max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20">
         <BoardList />
-      </AnimatedSection>
+      </section>
 
       {/* Footer */}
       <AnimatedSection
-        className="border-t border-border-gray mt-20"
+        className="relative z-20 bg-deep-black border-t border-border-gray mt-20"
         direction="fade"
       >
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
