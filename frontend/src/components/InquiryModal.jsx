@@ -3,6 +3,7 @@ import Tilt from 'react-parallax-tilt'
 import { X, Send, CheckCircle, AlertCircle, Cloud, GitBranch, Brain, Cpu, Server, Zap, Building2, User, Mail, Phone, MessageSquare } from 'lucide-react'
 import { useState } from 'react'
 import { submitInquiry } from '../services/api'
+import emailjs from '@emailjs/browser'
 
 const SERVICE_TYPES = [
   { value: 'CLOUD_RAG', label: '클라우드 RAG 구축', icon: Brain, color: 'from-violet-500/10 to-purple-500/10' },
@@ -37,7 +38,40 @@ export default function InquiryModal({ isOpen, onClose }) {
     setErrorMessage('')
 
     try {
+      // 1. Supabase에 문의 저장
       await submitInquiry(formData)
+
+      // 2. EmailJS로 이메일 전송 (EmailJS 설정이 완료된 경우에만 실행)
+      if (import.meta.env.VITE_EMAILJS_SERVICE_ID &&
+          import.meta.env.VITE_EMAILJS_SERVICE_ID !== 'your_service_id') {
+        try {
+          const serviceTypeLabels = formData.serviceType
+            .map(value => SERVICE_TYPES.find(s => s.value === value)?.label)
+            .join(', ')
+
+          const emailParams = {
+            to_email: import.meta.env.VITE_ADMIN_EMAIL || 'your-email@example.com',
+            from_name: formData.name,
+            from_email: formData.email,
+            company_name: formData.companyName || '(없음)',
+            phone: formData.phone || '(없음)',
+            service_type: serviceTypeLabels,
+            message: formData.message,
+            submission_date: new Date().toLocaleString('ko-KR'),
+          }
+
+          await emailjs.send(
+            import.meta.env.VITE_EMAILJS_SERVICE_ID,
+            import.meta.env.VITE_EMAILJS_TEMPLATE_ID,
+            emailParams,
+            import.meta.env.VITE_EMAILJS_PUBLIC_KEY
+          )
+        } catch (emailError) {
+          console.warn('이메일 전송 실패 (Supabase에는 저장됨):', emailError)
+          // 이메일 전송 실패해도 Supabase에는 저장되었으므로 계속 진행
+        }
+      }
+
       setStatus('success')
 
       // Reset form after 2 seconds
@@ -54,6 +88,7 @@ export default function InquiryModal({ isOpen, onClose }) {
         onClose()
       }, 2000)
     } catch (error) {
+      console.error('Error submitting inquiry:', error)
       setStatus('error')
       setErrorMessage(error.message || '문의 전송에 실패했습니다. 다시 시도해주세요.')
     }

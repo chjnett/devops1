@@ -3,10 +3,13 @@ import Tilt from 'react-parallax-tilt'
 import { FileText, Briefcase, ArrowRight } from 'lucide-react'
 import { useEffect, useState } from 'react'
 import { fetchPosts } from '../services/api'
+import PostDetailModal from './PostDetailModal'
 
 export default function BoardList() {
   const [posts, setPosts] = useState([])
   const [loading, setLoading] = useState(true)
+  const [selectedPost, setSelectedPost] = useState(null)
+  const [isModalOpen, setIsModalOpen] = useState(false)
 
   useEffect(() => {
     loadPosts()
@@ -50,6 +53,16 @@ export default function BoardList() {
 
   const getCategoryIcon = (category) => {
     return category === 'RECRUIT' ? Briefcase : FileText
+  }
+
+  const handlePostClick = (post) => {
+    setSelectedPost(post)
+    setIsModalOpen(true)
+  }
+
+  const handleCloseModal = () => {
+    setIsModalOpen(false)
+    setTimeout(() => setSelectedPost(null), 300) // 애니메이션 후 상태 초기화
   }
 
   if (loading) {
@@ -101,7 +114,10 @@ export default function BoardList() {
                 glareColor="#ffffff"
                 glareBorderRadius="24px"
               >
-                <div className="bento-card group cursor-pointer h-full min-h-[220px] flex flex-col justify-between hover:border-gray-500/50 transition-colors">
+                <div
+                  onClick={() => handlePostClick(post)}
+                  className="bento-card group cursor-pointer h-full min-h-[220px] flex flex-col justify-between hover:border-gray-500/50 transition-colors"
+                >
                   <div>
                     <div className="flex items-center justify-between mb-4">
                       <div className="p-2.5 rounded-xl bg-[#1F1F1F] group-hover:bg-[#333] transition-colors">
@@ -141,6 +157,13 @@ export default function BoardList() {
           View All Updates
         </button>
       </div>
+
+      {/* Post Detail Modal */}
+      <PostDetailModal
+        post={selectedPost}
+        isOpen={isModalOpen}
+        onClose={handleCloseModal}
+      />
     </div>
   )
 }

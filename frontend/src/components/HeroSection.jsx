@@ -54,7 +54,7 @@ export default function HeroSection({ onOpenInquiry }) {
             </div>
 
             <h1 className="text-5xl md:text-7xl lg:text-8xl font-bold mb-6 leading-tight tracking-tight">
-              Infrastructure
+              devops
               <br />
               <span className="text-gray-400">Beyond Limits</span>
             </h1>
@@ -70,9 +70,7 @@ export default function HeroSection({ onOpenInquiry }) {
                 Get Started
                 <ArrowRight className="inline-block ml-2 w-5 h-5 group-hover:translate-x-1 transition-transform" />
               </button>
-              <button className="btn-secondary">
-                View Portfolio
-              </button>
+
             </div>
           </motion.div>
 
@@ -100,7 +98,7 @@ export default function HeroSection({ onOpenInquiry }) {
               <img
                 src="/images/main.png"
                 alt="Space Developer"
-                className="relative w-full h-auto rounded-2xl shadow-2xl shadow-cyan-500/20"
+                className="relative w-full h-auto rounded-2xl shadow-2xl shadow-cyan-500/20 scale-90 sm:scale-100 md:scale-110 lg:scale-125 hover:scale-95 sm:hover:scale-105 md:hover:scale-115 lg:hover:scale-130 transition-transform duration-700"
               />
 
               {/* Floating particles around image */}
@@ -135,28 +133,7 @@ export default function HeroSection({ onOpenInquiry }) {
 
       </div>
 
-      {/* Stats - Full Width Below */}
-      <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-24">
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.5, duration: 0.8 }}
-          className="grid grid-cols-1 md:grid-cols-3 gap-6"
-        >
-          {[
-            { label: 'Projects Delivered', value: '150+' },
-            { label: 'Uptime Guarantee', value: '99.9%' },
-            { label: 'Response Time', value: '<24h' },
-          ].map((stat, index) => (
-            <div key={index} className="bento-card text-center backdrop-blur-md bg-dark-gray/80">
-              <div className="text-3xl md:text-4xl font-bold text-white mb-2">
-                {stat.value}
-              </div>
-              <div className="text-gray-500 text-sm uppercase tracking-wider">{stat.label}</div>
-            </div>
-          ))}
-        </motion.div>
-      </div>
+
 
       {/* Scroll Indicator */}
       <motion.div

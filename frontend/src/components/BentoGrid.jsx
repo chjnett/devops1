@@ -48,6 +48,17 @@ const capabilities = [
 ]
 
 export default function BentoGrid({ onOpenInquiry }) {
+  const handleCardClick = (capability) => {
+    if (capability.action === 'contact') {
+      // "Custom Solutions" 카드만 문의하기 모달 열기
+      onOpenInquiry()
+    } else if (capability.action === 'learn_more') {
+      // "Learn more" 카드는 아무 동작 안 함 (또는 향후 상세 페이지로 이동)
+      console.log('Learn more:', capability.title)
+    }
+    // action이 없는 카드는 클릭해도 아무 동작 안 함
+  }
+
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 max-w-7xl mx-auto">
       {capabilities.map((capability, index) => {
@@ -80,8 +91,10 @@ export default function BentoGrid({ onOpenInquiry }) {
               className="h-full"
             >
               <div
-                className="bento-card group cursor-pointer h-full relative overflow-hidden flex flex-col justify-between"
-                onClick={onOpenInquiry}
+                className={`bento-card group h-full relative overflow-hidden flex flex-col justify-between ${
+                  capability.action ? 'cursor-pointer' : 'cursor-default'
+                }`}
+                onClick={() => handleCardClick(capability)}
               >
                 <div className="relative z-10 flex-1">
                   {/* Header & Icon */}

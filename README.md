@@ -1,4 +1,4 @@
-# Cloud-Ops Deep Insight
+# CloudOps Deep Insight
 
 > **엔터프라이즈급 Cloud 인프라, DevOps, RAG, AIOps, MLOps 구축 전문 솔루션**
 
@@ -8,14 +8,15 @@
 
 ## 📋 프로젝트 개요
 
-- **Frontend:** React + Vite + Tailwind CSS + Framer Motion
-- **Backend:** Java Spring Boot + Spring Data JPA
-- **Database:** PostgreSQL
+- **Frontend:** React 18 + Vite + Tailwind CSS + Framer Motion + Three.js
+- **Backend:** Supabase (PostgreSQL + Auth + Storage)
+- **Email:** EmailJS
 - **주요 기능:**
   - 🎨 다크 벤토 그리드 레이아웃
   - 💬 스마트 문의 시스템 (자동 이메일 알림)
   - 📰 게시판 시스템 (공지사항/채용)
-  - 🔐 관리자 페이지
+  - 🔐 관리자 페이지 (Supabase Auth)
+  - 🌐 3D 애니메이션 및 인터랙티브 UI
 
 ---
 
@@ -33,100 +34,88 @@
 ### 1. Prerequisites
 
 - Node.js 18+ 설치
-- Java 17+ 설치
-- PostgreSQL 15+ 설치
-- Maven 설치
+- Supabase 계정 (무료)
+- EmailJS 계정 (무료)
 
-### 2. 데이터베이스 설정
-
-PostgreSQL에서 데이터베이스를 생성합니다:
-
-```sql
-CREATE DATABASE cloudops_db;
-```
-
-### 3. Backend 설정
-
-`backend/src/main/resources/application.yml` 파일을 수정합니다:
-
-```yaml
-spring:
-  datasource:
-    url: jdbc:postgresql://localhost:5432/cloudops_db
-    username: your_username  # PostgreSQL 사용자명
-    password: your_password  # PostgreSQL 비밀번호
-
-  mail:
-    username: your-email@gmail.com      # Gmail 주소
-    password: your-app-password          # Gmail 앱 비밀번호
-```
-
-### 4. Backend 실행
+### 2. 클론 및 설치
 
 ```bash
-cd backend
-mvn spring-boot:run
+git clone https://github.com/chjnett/devops1.git
+cd devops1/frontend
+npm install
 ```
 
-Backend가 `http://localhost:8080`에서 실행됩니다.
+### 3. Supabase 설정
 
-### 5. Frontend 설정 및 실행
+1. [Supabase](https://supabase.com)에서 새 프로젝트 생성
+2. SQL Editor에서 `supabase-schema.sql` 실행
+3. Project Settings에서 URL과 anon key 복사
+
+### 4. EmailJS 설정
+
+자세한 내용은 [EMAILJS_SETUP.md](./EMAILJS_SETUP.md) 참고
+
+1. [EmailJS](https://www.emailjs.com) 계정 생성
+2. Email Service 연결 (Gmail/Outlook)
+3. Email Template 생성
+4. Service ID, Template ID, Public Key 복사
+
+### 5. 환경 변수 설정
+
+`frontend/.env.example`을 `.env`로 복사 후 값 입력:
+
+```bash
+cp frontend/.env.example frontend/.env
+```
+
+```env
+VITE_SUPABASE_URL=your_supabase_url
+VITE_SUPABASE_ANON_KEY=your_anon_key
+VITE_EMAILJS_SERVICE_ID=your_service_id
+VITE_EMAILJS_TEMPLATE_ID=your_template_id
+VITE_EMAILJS_PUBLIC_KEY=your_public_key
+VITE_ADMIN_EMAIL=your-email@example.com
+```
+
+### 6. 개발 서버 실행
 
 ```bash
 cd frontend
-
-# 패키지 설치
-npm install
-
-# 개발 서버 실행
 npm run dev
 ```
 
-Frontend가 `http://localhost:3000`에서 실행됩니다.
+브라우저에서 `http://localhost:5173` 접속
 
 ---
 
 ## 📂 프로젝트 구조
 
 ```
-my-first-claude/
+devops1/
 ├── frontend/                    # React Frontend
 │   ├── src/
 │   │   ├── components/         # React 컴포넌트
 │   │   │   ├── MainPage.jsx   # 메인 페이지
 │   │   │   ├── HeroSection.jsx # 히어로 섹션
 │   │   │   ├── BentoGrid.jsx  # 벤토 그리드 레이아웃
+│   │   │   ├── TechStack.jsx  # 기술 스택 섹션
 │   │   │   ├── BoardList.jsx  # 게시판 목록
+│   │   │   ├── PostDetailModal.jsx # 게시물 상세 모달
 │   │   │   ├── InquiryModal.jsx # 문의 모달
-│   │   │   └── Navigation.jsx # 네비게이션
-│   │   ├── services/          # API 서비스
-│   │   │   └── api.js         # Axios API 클라이언트
-│   │   ├── App.jsx            # 메인 앱 컴포넌트
+│   │   │   └── AdminPage.jsx  # 관리자 페이지
+│   │   ├── lib/
+│   │   │   └── supabase.js    # Supabase 클라이언트
+│   │   ├── services/
+│   │   │   └── api.js         # Supabase API 서비스
+│   │   ├── App.jsx            # 메인 앱 (라우팅)
 │   │   └── main.jsx           # 진입점
+│   ├── .env.example           # 환경 변수 예시
 │   ├── package.json
 │   └── vite.config.js
 │
-├── backend/                     # Spring Boot Backend
-│   ├── src/main/java/com/cloudops/deepinsight/
-│   │   ├── entity/             # JPA 엔티티
-│   │   │   ├── Inquiry.java   # 문의 엔티티
-│   │   │   └── Post.java      # 게시물 엔티티
-│   │   ├── repository/         # JPA Repository
-│   │   │   ├── InquiryRepository.java
-│   │   │   └── PostRepository.java
-│   │   ├── service/            # 비즈니스 로직
-│   │   │   ├── InquiryService.java
-│   │   │   ├── PostService.java
-│   │   │   └── EmailService.java
-│   │   ├── controller/         # REST API Controller
-│   │   │   ├── InquiryController.java
-│   │   │   └── PostController.java
-│   │   ├── dto/                # Data Transfer Objects
-│   │   ├── config/             # 설정 클래스
-│   │   └── DeepInsightApplication.java
-│   └── pom.xml
-│
-├── PRD.md                       # 프로젝트 요구사항 문서
+├── supabase-schema.sql          # Supabase 데이터베이스 스키마
+├── EMAILJS_SETUP.md             # EmailJS 설정 가이드
+├── .gitignore
 └── README.md                    # 이 파일
 ```
 
@@ -213,27 +202,67 @@ Content-Type: application/json
 - **Vite 5.1** - 빌드 도구
 - **Tailwind CSS 3.4** - 유틸리티 CSS 프레임워크
 - **Framer Motion 11** - 애니메이션 라이브러리
-- **Axios 1.6** - HTTP 클라이언트
+- **Three.js + React Three Fiber** - 3D 그래픽스
+- **React Router DOM 7** - 클라이언트 라우팅
 - **Lucide React** - 아이콘 라이브러리
+- **React Parallax Tilt** - 인터랙티브 카드 효과
 
-### Backend
-- **Spring Boot 3.2** - Java 프레임워크
-- **Spring Data JPA** - ORM
-- **PostgreSQL** - 관계형 데이터베이스
-- **JavaMailSender** - 이메일 발송
-- **Lombok** - 코드 간소화
-
----
-
-## 📧 이메일 설정 (Gmail)
-
-1. Gmail 계정에서 2단계 인증 활성화
-2. 앱 비밀번호 생성: https://myaccount.google.com/apppasswords
-3. `application.yml`에 생성된 앱 비밀번호 입력
+### Backend & Services
+- **Supabase** - Backend as a Service
+  - PostgreSQL 데이터베이스
+  - Row Level Security (RLS)
+  - 실시간 구독
+  - Authentication
+- **EmailJS** - 이메일 알림 서비스
 
 ---
 
-## 🚀 프로덕션 빌드
+## 🚀 Vercel 배포
+
+### 1. Vercel 계정 연결
+
+1. [Vercel](https://vercel.com) 가입 (GitHub 계정으로 로그인)
+2. **"Add New Project"** 클릭
+3. GitHub 저장소 선택: `devops1`
+4. **Import** 클릭
+
+### 2. 프로젝트 설정
+
+**Framework Preset:** Vite
+**Root Directory:** `frontend`
+**Build Command:** `npm run build`
+**Output Directory:** `dist`
+
+### 3. 환경 변수 설정
+
+Vercel Dashboard → Settings → Environment Variables에서 다음 변수 추가:
+
+```
+VITE_SUPABASE_URL=your_supabase_url
+VITE_SUPABASE_ANON_KEY=your_anon_key
+VITE_EMAILJS_SERVICE_ID=your_service_id
+VITE_EMAILJS_TEMPLATE_ID=your_template_id
+VITE_EMAILJS_PUBLIC_KEY=your_public_key
+VITE_ADMIN_EMAIL=your-email@example.com
+```
+
+**Environment:** Production, Preview, Development 모두 체크
+
+### 4. 배포
+
+**"Deploy"** 버튼 클릭!
+
+배포 완료 후 `https://your-project.vercel.app` 에서 확인 가능합니다.
+
+### 자동 배포
+
+GitHub에 push하면 자동으로 Vercel에 배포됩니다:
+- `master` 브랜치 → Production 배포
+- 다른 브랜치 → Preview 배포
+
+---
+
+## 🏗️ 로컬 빌드
 
 ### Frontend 빌드
 ```bash
@@ -243,13 +272,10 @@ npm run build
 
 빌드된 파일은 `frontend/dist/` 디렉토리에 생성됩니다.
 
-### Backend 빌드
+### 빌드 미리보기
 ```bash
-cd backend
-mvn clean package
+npm run preview
 ```
-
-JAR 파일은 `backend/target/` 디렉토리에 생성됩니다.
 
 ---
 
