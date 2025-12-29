@@ -2,7 +2,16 @@
   "permissions": {
     "allow": [
       "Bash(npm install:*)",
-      "Bash(npm run dev:*)"
+      "Bash(npm run dev:*)",
+      "Bash(git remote set-url:*)",
+      "Bash(git push:*)",
+      "Bash(gradle wrapper:*)",
+      "Bash(pg_isready:*)",
+      "Bash(psql:*)",
+      "Bash(git rm:*)",
+      "Bash(git commit:*)",
+      "Bash(ls:*)",
+      "Bash(git add:*)"
     ]
   }
 }
